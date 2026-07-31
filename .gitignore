@@ -1,0 +1,20 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build output
+dist/
+*.tsbuildinfo
+
+# Test / coverage artifacts
+coverage/
+
+# Reference material — the rulebook PDF is copyrighted, kept locally, never committed.
+# Only the PDFs are ignored so reference_materials/README.md (the "go copy it" note) can ship.
+reference_materials/*.pdf
+
+# OS / editor
+.DS_Store
+*.log
+.idea/
+.vscode/
