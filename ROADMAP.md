@@ -143,3 +143,11 @@ practice at making a rule configurable without branching the whole engine.
   per-turn roll, injected at action time. Keep it that way.
 - **Everything is public**, so there is nothing to redact and no secret to leak — the one genuinely
   different property from Container, and worth preserving as the reorg's counter-example.
+
+## Review notes
+
+- **`src/client/Board.tsx` calls the engine's `legalActions` with a client _view_ where the engine types
+  a _state_.** It compiles only because Can't Stop redacts nothing, so its view and state are structurally
+  identical — a coincidence, not a contract. A future slice should derive affordances from the
+  view/payload the client already holds rather than re-running the engine (the Labyrinth convention), so
+  the client stops depending on view≡state. No code change now; logged so the smell isn't forgotten.
