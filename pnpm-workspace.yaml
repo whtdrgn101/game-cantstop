@@ -17,5 +17,5 @@ autoInstallPeers: false
 # still under the threshold when this repo installs, list it here to let it through — pnpm writes these
 # lines itself. Once the versions age past the threshold these entries can be deleted.
 minimumReleaseAgeExclude:
-  - '@game-hub/kernel@1.2.0'
+  - '@game-hub/kernel@1.2.0 || 1.3.0'
   - '@game-hub/ui-kit@1.0.0'

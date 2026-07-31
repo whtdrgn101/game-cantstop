@@ -52,7 +52,7 @@ import {
   COLUMNS, COLUMN_HEIGHTS, WIN_COLUMNS, MAX_RUNNERS, DICE_COUNT, MIN_PLAYERS, MAX_PLAYERS,
 } from '@game-hub/game-cantstop/engine';
 import cantStopModule from '@game-hub/game-cantstop/module';
-import cantstopClient from '@game-hub/game-cantstop/client';
+import cantstopClient, { act, getGameAs, roll as clientRoll, GAME_TYPE } from '@game-hub/game-cantstop/client';
 import * as bot from '@game-hub/game-cantstop/bot';
 
 const require = createRequire(import.meta.url);
@@ -138,6 +138,23 @@ const clientDir = dirname(require.resolve('@game-hub/game-cantstop/client'));
 const board = await import(pathToFileURL(join(clientDir, 'Board.js')).href);
 assert.equal(typeof board.default, 'function', 'dist/client/Board.js must load and default-export the board');
 
+// The standardized ./client surface (game-creation §4): the default client, plus the game type and the
+// typed transport helpers, all reachable from the one ./client subpath.
+assert.equal(GAME_TYPE, 'cantstop');
+assert.equal(typeof act, 'function', 'act is re-exported from ./client');
+assert.equal(typeof clientRoll, 'function', 'roll is re-exported from ./client');
+assert.equal(typeof getGameAs, 'function', 'getGameAs is re-exported from ./client');
+
+// The "box lid" Icon (kernel 1.3.0): optional, and lazy exactly like the board — losing the split would
+// ship every game's mark to the home screen invisibly. The chunk must also be in the tarball.
+assert.equal(
+  cantstopClient.Icon.$$typeof,
+  Symbol.for('react.lazy'),
+  'the icon must be a React.lazy — the same erased/lazy pattern as the board',
+);
+const icon = await import(pathToFileURL(join(clientDir, 'art', 'Icon.js')).href);
+assert.equal(typeof icon.default, 'function', 'dist/client/art/Icon.js must load and default-export the mark');
+
 // --- ./bot — the risk model + difficulty tiers, resolvable and callable at runtime. ---
 assert.equal(typeof bot.decide, 'function');
 assert.equal(typeof bot.shouldRoll, 'function');
@@ -153,9 +170,18 @@ console.log('runtime smoke ok — ./engine ./module ./client ./bot all resolve, 
 /** What a consumer's compiler must see: the exported type surface, through the published `exports`. */
 const TYPE_CONSUMER = `import { createGame, viewFor, type Action, type CantStopState, type CantStopView, type NewPlayer } from '@game-hub/game-cantstop/engine';
 import cantStopModule from '@game-hub/game-cantstop/module';
-import cantstopClient from '@game-hub/game-cantstop/client';
+import cantstopClient, {
+  act, getGameAs, roll,
+  type BoardProps, type GameClient, type CantStopPayload, type CantStopView as CantStopClientView,
+} from '@game-hub/game-cantstop/client';
 import { decide, type CantStopDifficulty } from '@game-hub/game-cantstop/bot';
 import type { GameModule as KernelGameModule } from '@game-hub/kernel';
+
+// The standardized ./client surface, through the *published* .d.ts: the client is a GameClient<View>
+// (with the optional lazy Icon), and BoardProps / the payload / the view type are all nameable from the
+// one ./client subpath without reaching into ./types or ./api (game-creation §4).
+const clientContract: GameClient<CantStopView> = cantstopClient;
+type ClientBoardProps = BoardProps<CantStopView>;
 
 // The one assignment that matters: what ./module exports really is a kernel GameModule, checked through
 // the *published* .d.ts of both packages rather than through the workspace's source. The Ctx/App generics
@@ -175,6 +201,16 @@ export const surface = {
   engine: createGame({ id: 'g', players }).turn,
   view: viewFor(createGame({ id: 'g', players }), 'p1') satisfies CantStopView,
   client: cantstopClient.name,
+  // The standardized ./client re-exports, exercised at the type level: the client contract, its optional
+  // lazy Icon, the typed helpers, and the payload / board-props / view types nameable off ./client.
+  clientContract: clientContract.id,
+  hasIcon: clientContract.Icon !== undefined,
+  actFn: typeof act,
+  rollFn: typeof roll,
+  getGameFn: typeof getGameAs,
+  payload: null as unknown as CantStopPayload,
+  boardProps: null as unknown as ClientBoardProps,
+  clientView: null as unknown as CantStopClientView,
   bot: typeof decide,
   difficulty: 'hard' satisfies CantStopDifficulty,
 };

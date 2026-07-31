@@ -21,6 +21,9 @@ export const cantstopClient: GameClient<CantStopView> = {
     'If a roll can’t advance anything, you bust and lose this turn’s progress.',
     'Stop to bank your runners as permanent squares. First to the top of three columns wins.',
   ],
+  // The game's "box lid" mark (kernel 1.3.0). Lazy, exactly like the board — the picker shows every
+  // hosted game, so an eager icon would ship every game's art to the home screen. See art/Icon.tsx.
+  Icon: lazy(() => import('./art/Icon.js')),
   Board: lazy(() => import('./Board.js')),
   Status: CantStopStatus,
 };
@@ -28,3 +31,10 @@ export const cantstopClient: GameClient<CantStopView> = {
 // The package-contract entry point (Track D / D0): the generated registry imports each game's client
 // as a default. Still tiny/non-lazy — the default is the same light object, board import unchanged.
 export default cantstopClient;
+
+// The settled bindings, re-exported so a host (and this package's own tests) can name what they are
+// holding without reaching into ./api or ./types (the standardized ./client surface — game-creation §4).
+export type { BoardProps, GameClient } from './types.js';
+export { act, getGameAs, roll, GAME_TYPE } from './api.js';
+export type { CantStopPayload } from './api.js';
+export type { CantStopView } from '../engine/index.js';
