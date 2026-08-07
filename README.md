@@ -1,6 +1,6 @@
 # @game-hub/game-cantstop
 
-Sid Sackson's **_Can't Stop_** as a [Game Hub](https://github.com/whtdrgn101/container) game package: the
+Sid Sackson's **_Can't Stop_** as a [Game Hub](https://github.com/whtdrgn101/game-hub) game package: the
 classic 2–4 player push-your-luck dice game where you climb the number columns with three temporary
 runners, pressing your luck for one more roll — until a roll that can advance nothing **busts** you and
 wipes out the turn's progress. **Stop** in time to bank your runners as permanent squares; **first to

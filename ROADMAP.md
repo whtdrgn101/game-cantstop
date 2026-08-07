@@ -4,7 +4,7 @@ The per-game roadmap for **Can't Stop** (the game), tracked across every layer: 
 (`src/engine/`), backend module (`src/module/`), UI client
 (`src/client/`), and its bot (`src/bot/`) — all in this package (`@game-hub/game-cantstop`).
 Platform/engine-wide work lives in the Game Hub platform repo
-([`whtdrgn101/container`](https://github.com/whtdrgn101/container)).
+([`whtdrgn101/game-hub`](https://github.com/whtdrgn101/game-hub)).
 
 **Status:** extracted from the Game Hub monorepo (`packages/games/cantstop`) into this standalone
 out-of-repo package, following the Labyrinth pilot (Track D) — it now depends on the published
